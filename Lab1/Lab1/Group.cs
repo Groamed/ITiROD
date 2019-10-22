@@ -26,8 +26,11 @@ namespace Lab1
 
             for (int i = 2; i < header.Length; i++)
             {
-                subjects.Add(header[i], 0);
-                averageMarks.Add(header[i], 0);
+                if(!subjects.ContainsKey(header[i]))
+                {
+                    subjects.Add(header[i], 0);
+                    averageMarks.Add(header[i], 0);
+                }
             }
 
             subjects.Add("Средний", 0);
@@ -35,15 +38,34 @@ namespace Lab1
 
             foreach (string[] line in data)
             {
-                Student student = new Student(line[0], line[1], line[2]);
+                Student student = new Student(line[0], line[1]);
+                int count = 1;
 
                 for (int i = 2; i < header.Length; i++)
                 {
-                    Subject subj = new Subject(header[i], double.Parse(line[i]));
-                    student.AddSubj(subj);
-
-                    subjects[header[i]] += double.Parse(line[i]);
-                    averageMarks[header[i]] = subjects[header[i]] / (students.Count + 1);
+                    try
+                    {
+                        Subject subj;
+                        if((subj = student.subjects.Find(item => item.name == header[i])) != null)
+                        {
+                            subj.AddMark(double.Parse(line[i]));
+                            count++;
+                        } else
+                        {
+                            subj = new Subject(header[i]);
+                            subj.AddMark(double.Parse(line[i]));
+                            student.AddSubj(subj);
+                        }
+                        
+                        subjects[header[i]] += double.Parse(line[i]);
+                        averageMarks[header[i]] = subjects[header[i]] / (students.Count * count + 1);
+                    } 
+                    catch
+                    {
+                        Console.WriteLine("Отсутствует оценка");
+                        Console.ReadLine();
+                        Environment.Exit(0);
+                    }
                 }
 
                 subjects["Средний"] += student.averageMark;
@@ -59,12 +81,12 @@ namespace Lab1
 
             toOutput += string.Format("{0,-20} {1,-20}", header[0], header[1]);
 
-            for (int i = 2; i < header.Length; i++)
+            foreach (string head in subjects.Keys)
             {
-                toOutput += string.Format("{0,-15}", header[i]);
+                toOutput += string.Format("{0,-15}", head);
             }
 
-            toOutput += string.Format("Средний\n");
+            toOutput += string.Format("\n");
 
             foreach (Student person in students)
             {
@@ -75,7 +97,7 @@ namespace Lab1
 
             foreach (KeyValuePair<string, double> subj in averageMarks)
             {
-                toOutput += string.Format("{0,-15}", subj.Value);
+                toOutput += string.Format("{0,-15}", Math.Round(subj.Value,2));
             }
 
             return toOutput;

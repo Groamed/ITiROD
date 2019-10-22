@@ -7,12 +7,17 @@ namespace Lab1
     class Subject
     {
         public string name { get; set; }
-        public double mark { get; set; }
+        public List<double> mark { get; set; }
 
-        public Subject(string name, double mark)
+        public Subject(string name)
         {
             this.name = name;
-            this.mark = mark;
+            mark = new List<double>();
+        }
+
+        public void AddMark(double mark)
+        {
+            this.mark.Add(mark);
         }
 
         public override string ToString()

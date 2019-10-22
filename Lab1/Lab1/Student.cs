@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Lab1
 {
@@ -9,7 +10,7 @@ namespace Lab1
         public double averageMark { get; set; }
         public List<Subject> subjects { get; set; }
 
-        public Student(string name, string surname, string patronymic)
+        public Student(string name, string surname)
         {
             this.name = name;
             this.surname = surname;
@@ -19,13 +20,18 @@ namespace Lab1
         public double AverageMark()
         {
             double total = 0;
+            int count = 0;
 
             foreach (Subject subj in subjects)
             {
-                total += subj.mark;
+                foreach(double mark in subj.mark)
+                {
+                    total += mark;
+                    count++;
+                }
             }
 
-            total /= subjects.Count;
+            total /= count;
 
             return total;
         }
@@ -43,10 +49,14 @@ namespace Lab1
 
             foreach (Subject subj in subjects)
             {
-                toOutput += string.Format("{0,-15}", subj.mark);
+                string marks = "";
+                foreach (double mark in subj.mark)
+                {
+                    marks += mark + " ";
+                }
+                toOutput += string.Format("{0,-15}", marks);
             }
-
-            toOutput += string.Format("{0,-10}", AverageMark());
+            toOutput += string.Format("{0,-10}", Math.Round(AverageMark(), 2));
 
             return toOutput;
         }
